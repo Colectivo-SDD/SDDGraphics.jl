@@ -35,3 +35,12 @@ function backend(sym::Symbol)
             Current backend is `:$_backend_symbol`.""")
     end # if supported
 end # function
+
+
+function supported(funname)
+    if !isdefined(_backend, funname)
+        @error string(funname, " is not supported in ",  _supportedbackends[_backend_symbol], " backend")
+        return false
+    end
+    true
+end

@@ -18,8 +18,7 @@ end # function
 colortype() = _ColorType
 
 
-_calculatecolorarray(ncolors::Integer) =
-    global _colorarray = [ _colorscheme[n/ncolors] for n in 0:ncolors ]
+_calculatecolorarray(ncolors::Integer) = global _colorarray = [ _colorscheme[n/ncolors] for n in 0:ncolors ]
 
 _calculatecolorarray(100)
 
@@ -34,9 +33,20 @@ end # function
 colorarray() = _colorarray
 
 
-"Set the Color Scheme, from identifier symbol."
-function colorscheme(sym::Symbol)
+"""
+    colorscheme(symbol,invert=false)
+
+Set the Color Scheme, from identifier symbol.
+
+#### Arguments
+- `sym::Symbol`: Valid colorscheme symbol identifier from **ColorSchemes.jl**.
+- `invert::Bool`: If true, create the color scheme with reverse colors order.
+"""
+function colorscheme(sym::Symbol, invert::Bool=false)
     global _colorscheme = colorschemes[sym]
+    if invert
+        _colorscheme = ColorScheme(reverse(_colorscheme.colors))
+    end
     _calculatecolorarray(length(_colorarray))
 end # function
 
