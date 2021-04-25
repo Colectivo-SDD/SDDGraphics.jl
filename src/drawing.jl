@@ -1,5 +1,5 @@
 
-_drawingkind = :pixels
+_drawingkind = :png
 
 """
 Set the current kind of drawing

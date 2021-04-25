@@ -1,6 +1,5 @@
 
-using Colors, ColorSchemes
-export Colors, ColorSchemes
+@reexport using Colors, ColorSchemes
 
 
 _ColorType = RGB{Float64}
@@ -51,8 +50,11 @@ function colorscheme(sym::Symbol, invert::Bool=false)
 end # function
 
 "Set the Color Scheme."
-function colorscheme(cs::ColorScheme)
+function colorscheme(cs::ColorScheme, invert::Bool=false)
     global _colorscheme = cs
+    if invert
+        _colorscheme = ColorScheme(reverse(_colorscheme.colors))
+    end
     _calculatecolorarray(length(_colorarray))
 end # function
 
@@ -64,7 +66,13 @@ colorscheme() = _colorscheme
 color(n::Integer) = _backend.color(convert(_ColorType, _colorarray[n]))
 
 "Set the current color from t-interpolated color in the color scheme."
-color(t::Real) = _backend.color(convert(_ColorType, _colorscheme[t]))
+colorinterpolation(t::Real) = _backend.color(convert(_ColorType, _colorscheme[t]))
+
+"Set the cirrent color using the current color map"
+color(x::Real, y::Real) = _backend.color(x,y)
+
+"Set the cirrent color using the current color map"
+color(z::Number) = _backend.color(z)
 
 "Set the current color."
 color(c::Colorant) = _backend.color(convert(_ColorType, c))

@@ -5,43 +5,9 @@ drawings in SDD algorithms.
 """
 module SDDGraphics
 
-include("canvas.jl")
-include("colors.jl")
-include("colormaps.jl")
+using Reexport
 
-function configure(;kwargs...)
-  for (k,v) in kwargs
-    if k == :canvassize
-      canvasize(v...)
-    elseif k == :width
-      width(v)
-    elseif k == :height
-      height(v)
-    elseif k == :xlims
-      xlims(v...)
-    elseif k == :ylims
-      width(v...)
-    elseif k == :rectregion
-      rectregion(v...)
-    elseif k == :xmin
-      xmin(v)
-    elseif k == :xmax
-      xmax(v)
-    elseif k == :ymin
-      ymin(v)
-    elseif k == :ymax
-      ymax(v)
-    elseif k == :color
-      color(v)
-    elseif k == :bgcolor
-      bgcolor(v)
-    elseif k == :colorscheme
-      colorscheme(v)
-    elseif k == :colormap
-      colormap(v)
-    end
-  end
-end
+include("canvas.jl")
 
 export
   canvassize,
@@ -54,9 +20,13 @@ export
   xmax,
   ymax,
   pointtopixel,
-  pixeltopoint,
-  #linewidth,
-  #style,
+  pixeltopoint
+
+
+include("colors.jl")
+include("colormaps.jl")
+
+export
   colortype,
   color,
   bgcolor,
@@ -64,27 +34,77 @@ export
   colorarray,
   colormap,
   RadialColorMap,
-  AngleColorMap,
-  configure
+  AngleColorMap
 
 
-include("backends/images.jl")
-include("backends/luxor.jl")
-include("backends.jl")
 include("drawing.jl")
 
+  function configure(;kwargs...)
+    for (k,v) in kwargs
+      if k == :canvassize || k == :canvas
+        canvasize(v...)
+      elseif k == :width
+        width(v)
+      elseif k == :height
+        height(v)
+      elseif k == :xmin
+        xmin(v)
+      elseif k == :xmax
+        xmax(v)
+      elseif k == :ymin
+        ymin(v)
+      elseif k == :ymax
+        ymax(v)
+      elseif k == :xlims
+        xlims(v...)
+      elseif k == :ylims
+        width(v...)
+      elseif k == :rectregion || k == :rect
+        rectregion(v...)
+      elseif k == :color
+        color(v)
+      #elseif k == :fgcolor || k == :fgc
+        #fgcolor(v)
+      elseif k == :bgcolor || k == :bgc
+        bgcolor(v)
+      elseif k == :colorscheme || k == :cs
+        colorscheme(v)
+      elseif k == :colorschemeinv || k == :csinv
+        colorscheme(v,true)
+      elseif k == :colormap || k == :cm
+        colormap(v)
+      #elseif k == :axes
+        #axes(v)
+      end
+    end
+  end
+
 export
-  backend,
-  backends,
-  supported,
+  #strokewidth,
+  #fill,
+  #style,
+  configure,
   drawingkind,
   newdrawing,
   drawpixel,
   drawpoint,
-  #drawcircle,
-  #drawarc,
-  #drawbox,
+  #drawline,
+  #drawray,
   #drawlinesegment,
+  #drawcircle,
+  #drawcirculararc,
+  #drawbox,
+  #drawrect,
   drawing
+
+
+include("backends/images.jl")
+#include("backends/luxor.jl")
+include("backends.jl")
+
+export
+  backend,
+  backends,
+  supported
 
 end

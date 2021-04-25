@@ -1,24 +1,20 @@
 
-import Images
-export Images
+@reexport using Images
 
 "Inner module Images Backend"
 module ImagesBE
 
-#PM = parentmodule(ImagesBE)
-import ..SDDGraphics: _ColorType, _width, _height, pointtopixel
-#PM.
+import ..SDDGraphics: _ColorType, _width, _height, _colormap, pointtopixel
 
 _color = _ColorType(0,0,0)
 _bgcolor = _ColorType(1,1,1)
 
 color(c::_ColorType) = global _color = c
-
+color(x::Real, y::Real) = global _color = _colormap(x,y)
+color(z::Number) = global _color = _colormap(z)
 color() = _color
 
-
 bgcolor(c::_ColorType) = global _bgcolor = c
-
 bgcolor() = _bgcolor
 
 

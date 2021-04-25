@@ -12,45 +12,60 @@ abstract type AbstractColorMap end
 
 
 """
-    RadialColorMap(x,y,inner,outer)
+    RadialColorMap(centerx=0, centery=0 [; innerradius=0,outeradius=1])
+    RadialColorMap(center [; innerradius=0,outeradius=1])
 
+The radial color map is given by the function
 
+\$(x,y) \\mapsto \\begin{cases}
+colorscheme[0] & r \\leq innererradius \\\\
+colorscheme[\\frac{r-innererradius}{outerradius-innererradius}] & \\, \\\\
+colorscheme[1] & r \\geq outerradius \\\\
+\\end{cases}\$
+
+where \$r=|(x,y)-(centerx,centery)|\$.
 """
 struct RadialColorMap <: AbstractColorMap
     centerx::Float64
     centery::Float64
-    innerradius::Float64
-    outerradius::Float64
+    inrad::Float64
+    outrad::Float64
 
-    function RadialColorMap(x::Real=0, y::Real=0, irad::Real=0, orad::Real=1)
-        @assert irad >= 0 && orad > 0 && orad > irad "Incorrect inner or outer radiuses values."
-        new(x,y,irad,orad)
+    function RadialColorMap(x::Real=0, y::Real=0; innerradius::Real=0, outerradius::Real=1)
+        @assert innerradius >= 0 && outerradius > 0 && outerradius > innerradius "Incorrect inner or outer radiuses values."
+        new(x,y,innerradius,outerradius)
     end
 end
 
-RadialColorMap(x::Real=0, y::Real=0; inner::Real=0, outer::Real=1) = RadialColorMap(x,y,inner,outer)
+RadialColorMap(z::Complex; innerradius::Real=0, outerradius::Real=1) = RadialColorMap(real(z),imag(z),inneradius,outeradius)
 
-RadialColorMap(z::Complex; inner::Real=0, outer::Real=1) = RadialColorMap(real(z),imag(z),inner,outer)
+center(cm::RadialColorMap) = cm.centerx, cm.centery
+innerradius(cm::RadialColorMap) = cm.inrad
+outerradius(cm::RadialColorMap) = cm.outrad
 
 
 function (cm::RadialColorMap)(x::Real, y::Real)
-    r = sqrt((x-centerx)^2 + (y-centery)^2)
-    if r <= innerradius
-        return first(_colorarray)
-    elseif r >= outerradius
+    r = sqrt((x - cm.centerx)^2 + (y - cm.centery)^2)
+    if r >= cm.outrad || isnan(r)
         return last(_colorarray)
+    elseif r <= cm.inrad
+        return first(_colorarray)
     end
-    r -= innerradius
-    _colorscheme[r/(outerradius - innerradius)]
+    _colorscheme[(r - cm.inrad)/(cm.outrad - cm.inrad)]
 end
 
-function (cm::RadialColorMap)(z::Number) = cm(real(z), imag(z))
+function (cm::RadialColorMap)(z::Number)
+    cm(real(z), imag(z))
+end
 
 
 """
-    AngleColorMap(x,y)
+    AngleColorMap(center=0)
+    AngleColorMap(centerx,centery)
 
+The angle color map is given by the function
 
+\$z \\mapsto colorscheme[\\frac{angle(z-center)+\\pi}{2\\pi}]\$
 """
 struct AngleColorMap <: AbstractColorMap
     center::Complex{Float64}
@@ -62,12 +77,19 @@ end
 
 AngleColorMap(x::Real, y::Real) = AngleColorMap(complex(x,y))
 
+center(cm::AngleColorMap) = cm.center
+
 
 function (cm::AngleColorMap)(z::Number)
-    _colorscheme[(angle(z - center) + π)/(2π)]
+    if isnan(z)
+        return last(_colorarray)
+    end
+    _colorscheme[(angle(z - cm.center) + π)/(2π)]
 end
 
-function (cm::AngleColorMap)(x::Real, y::Real) = cm(complex(x,y))
+function (cm::AngleColorMap)(x::Real, y::Real)
+    cm(complex(x,y))
+end
 
 
 #=
@@ -80,15 +102,16 @@ CircleRadialColorMap
 RectangleColorMap (Inside rectangle one color, outside other color)
 CircleColorMap (Inside circle one color, outside other color)
 ImageColorMap (Colors from image's pixels)
-BandColorMap (regular bands plane tesselation) ???
+BandColorMap (regular bands plane tesselation)
 ChessColorMap (regular rectangles plane tesselation)
-HexColorMap (regular HexColorMapgones plane tesselation) ???
-TriColorMap (regular triangles plane tesselation) ???
+RadialChessColorMap ("regular radial rectangles" plane tesselation)
 =#
+
 
 _colormap = RadialColorMap()
 
 "Set the color map."
 colormap(cm::AbstractColorMap) = global _colormap = cm
 
-#colormap() = _colormap
+"Get the current color map."
+colormap() = _colormap
