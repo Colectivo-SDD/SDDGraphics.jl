@@ -56,17 +56,54 @@ insiderectregion(z::Complex) = insiderectregion(z.re, z.im)
 insiderectregion(x::Real) = insiderectregion(x,0)
 
 
+"Adjust canvas size to rectangular region to have the same aspect ratio."
+function adjustcanvas()
+    aspectratio = (_ymax-_ymin)/(_xmax-_xmin)
+    if aspectration <= 1
+        global _width = Int(ceil(_height/aspectratio))
+    else
+        global _height = Int(ceil(_width*aspectratio))
+    end # if
+end
+
+"Adjust rectangular region to canvas size to have the same aspect ratio."
+function adjustrectregion() # INCORRECT!
+    aspectratio = _height/_width
+    if aspectration <= 1
+        x0 = (_xmin+_xmax)/2
+        Δx = (_xmax-_xmin)/aspectratio
+        global _xmin = x0 - Δx
+        global _xmax = x0 + Δx
+    else
+        y0 = (_ymin+_ymax)/2
+        Δy = (_ymax-_ymin)*aspectratio
+        global _ymin = y0 - Δy
+        global _ymax = y0 + Δy
+    end # if
+end
+
+
 "Convert plane coordinates to image coordinates."
 pointtopixel(x::Real, y::Real) =
     Integer(ceil(_height*(_ymax-y)/(_ymax-_ymin))), # j
     Integer(ceil(_width*(x-_xmin)/(_xmax-_xmin)))   # i
 
 "Convert complex plane coordinates to image coordinates."
-pointtopixel(z::Complex) = pointtopixel(z.re, z.im)
+pointtopixel(z::Number) = pointtopixel(real(z), imag(z))
 
-"Convert real line coordinates to image coordinates."
-pointtopixel(x::Real) = pointtopixel(x, 0)
+
+"Convert plane coordinates to canvas coordinates."
+pointtocanvas(x::Real, y::Real) =
+    _width*(x-_xmin)/(_xmax-_xmin), _height*(_ymax-y)/(_ymax-_ymin)
+
+"Convert complex plane coordinates to canvas coordinates."
+pointtocanvas(z::Number) = pointtocanvas(real(z), imag(z))
+
 
 "Convert image coordinates to plane coordinates."
 pixeltopoint(i::Integer, j::Integer) =
+    _xmin+(i-1)*(_xmax-_xmin)/(_width-1), _ymax-(j-1)*(_ymax-_ymin)/(_height-1)
+
+"Convert canvas coordinates to plane coordinates."
+canvastopoint(i::Real, j::Real) =
     _xmin+(i-1)*(_xmax-_xmin)/(_width-1), _ymax-(j-1)*(_ymax-_ymin)/(_height-1)

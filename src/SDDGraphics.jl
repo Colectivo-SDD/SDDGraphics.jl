@@ -13,39 +13,54 @@ export
   canvassize,
   width,
   height,
+  rectregion,
   xlims,
   ylims,
   xmin,
   ymin,
   xmax,
   ymax,
+  insiderectregion,
   pointtopixel,
-  pixeltopoint
+  pixeltopoint,
+  pointtocanvas,
+  canvastopoint
 
 
 include("colors.jl")
-include("colormaps.jl")
+include("coloringfunctions.jl")
 
 export
   colortype,
   color,
   bgcolor,
+  fgcolor,
   colorscheme,
-  colorarray,
   colormap,
-  RadialColorMap,
-  AngleColorMap
+  colorarray,
+  coloringfunction,
+  RadialColoringFunction, RadialCF,
+  AngleColoringFunction, AngleCF
 
 
 include("drawing.jl")
 
-  function configure(;kwargs...)
+#ToDo!: Documentation.
+"""
+    configure(; kwargs...)
+
+Shortcut function to configure graphics.
+
+#### Arguments
+- `canvassize=(w,h)` or `canvas=(w,h)`: Set the canvas size.
+"""
+  function configure(; kwargs...)
     for (k,v) in kwargs
       if k == :canvassize || k == :canvas
-        canvasize(v...)
-      elseif k == :width
+        canvassize(v...)
+      elseif k == :width || k == :w
         width(v)
-      elseif k == :height
+      elseif k == :height || k == :h
         height(v)
       elseif k == :xmin
         xmin(v)
@@ -63,26 +78,31 @@ include("drawing.jl")
         rectregion(v...)
       elseif k == :color
         color(v)
-      #elseif k == :fgcolor || k == :fgc
-        #fgcolor(v)
       elseif k == :bgcolor || k == :bgc
         bgcolor(v)
-      elseif k == :colorscheme || k == :cs
+      elseif k == :fgcolor || k == :fgc
+        fgcolor(v)
+      elseif k == :colormap || k == :cm || k == :colorscheme || k == :cs
         colorscheme(v)
-      elseif k == :colorschemeinv || k == :csinv
+      elseif k == :colormapinv || k == :cminv || k == :colorschemeinv || k == :csinv
         colorscheme(v,true)
-      elseif k == :colormap || k == :cm
-        colormap(v)
-      #elseif k == :axes
-        #axes(v)
+      elseif k == :coloringfunction || k == :cf
+        coloringfunction(v)
+      elseif k == :axes
+        axes(v)
+      elseif k == :pointsize || k == :ps
+        pointsize(v)
+      elseif k == :linewidth || k == :lw
+        linewidth(v)
       end
     end
   end
 
 export
-  #strokewidth,
-  #fill,
-  #style,
+  pointsize,
+  linewidth,
+  #style, # :stroke, :fill, :fillstroke, :fillgrad
+  #dash
   configure,
   drawingkind,
   newdrawing,
@@ -92,14 +112,14 @@ export
   #drawray,
   #drawlinesegment,
   #drawcircle,
-  #drawcirculararc,
-  #drawbox,
-  #drawrect,
+  #drawarc,
+  #drawpath,
+  #drawbox, #?
+  #drawrect, #?
   drawing
 
 
-include("backends/images.jl")
-#include("backends/luxor.jl")
+include("backends/images.jl") # Default backend
 include("backends.jl")
 
 export
