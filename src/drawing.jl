@@ -72,6 +72,10 @@ drawpoint(z::Complex) = _backend.drawpoint(z)
 "Draw the point x."
 drawpoint(x::Real) = _backend.drawpoint(x)
 
+drawlinesegment(x1::Real, y1::Real, x2::Real, y2::Real) =
+_backend.drawlinesegment(x1,y1,x2,y2)
+drawlinesegment(z1::Number, z2::Number) = _backend.drawlinesegment(z1,z2)
+drawlinesegment(l::AbstractLineSegment) = _backend.drawlinesegment(l)
 
 drawline(x::Real, y::Real, θ::Real) = _backend.drawline(x,y,θ)
 drawline(z::Number, θ::Real) = _backend.drawline(z,θ)
@@ -81,6 +85,13 @@ drawcircle(x::Real, y::Real, r::Real) = _backend.drawcircle(x,y,r)
 drawcircle(z::Number, r::Real) = _backend.drawcircle(z,r)
 drawcircle(c::AbstractCircle) = _backend.drawcircle(c)
 
+drawarc(x1::Real,y1::Real,x2::Real,y2::Real,x3::Real,y3::Real) =
+_backend.drawarc(x1,y1,x2,y2,x3,y3)
+drawarc(z1::Number,z2::Number,z3::Number) = _backend.drawarc(z1,z2,z3)
+drawarc(a::AbstractArc) = _backend.drawarc(a)
+drawarc(x1::Real,y1::Real,x2::Real,y2::Real) =
+_backend.drawarc(x1,y1,x2,y2)
+drawarc(z1::Number,z2::Number) = _backend.drawarc(z1,z2)
 
 "Returns the current created drawing."
 drawing() = _backend.drawing()

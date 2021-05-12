@@ -38,6 +38,7 @@ export
   colorscheme,
   colormap,
   colorarray,
+  updatecolorarray,
   coloringfunction,
   RadialColoringFunction, RadialCF,
   AngleColoringFunction, AngleCF
@@ -94,6 +95,10 @@ Shortcut function to configure graphics.
         pointsize(v)
       elseif k == :linewidth || k == :lw
         linewidth(v)
+      elseif k == :style
+        style(v)
+      #elseif k == :dash
+      #  dash(v)
       end
     end
   end
@@ -101,21 +106,22 @@ Shortcut function to configure graphics.
 export
   pointsize,
   linewidth,
-  #style, # :stroke, :fill, :fillstroke, :fillgrad
+  style, # :stroke, :fill, :fillstroke, :fillgrad
   #dash
   configure,
   drawingkind,
   newdrawing,
   drawpixel,
   drawpoint,
-  #drawline,
+  drawline,
   #drawray,
-  #drawlinesegment,
-  #drawcircle,
-  #drawarc,
-  #drawpath,
+  drawlinesegment,
+  drawcircle,
+  drawarc,
+  #drawpath, #?
   #drawbox, #?
   #drawrect, #?
+  axes,
   drawing
 
 

@@ -37,7 +37,9 @@ drawpoint(z::Number) = global _image[pointtopixel(z)...] = _color
 
 function drawing()
     if _axes
-        i0, j0 = pointtopixel(0,0)
+        j0, i0 = pointtopixel(0,0)
+        i0 = i0 < 1 ? 1 : (i0 > _width ? _width : i0)
+        j0 = j0 < 1 ? 1 : (j0 > _height ? _height : j0)
         for i in 1:_width
             _image[j0,i] = _fgcolor
         end

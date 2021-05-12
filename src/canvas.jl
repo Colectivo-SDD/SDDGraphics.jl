@@ -8,7 +8,7 @@ canvassize() = _width, _height
 "Set the canvas size (width and height)."
 canvassize(w::Integer, h::Integer) = global _width, _height = w, h
 
-with() = _width
+width() = _width
 height() = _height
 width(w) = global _with = w
 height(h) = global _height = h

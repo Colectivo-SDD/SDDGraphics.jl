@@ -75,6 +75,9 @@ colorinterpolation(t::Real) = _backend.color(convert(_ColorType, _colorscheme[t]
 "Set the current color using the current color map"
 color(x::Real, y::Real) = _backend.color(x,y)
 
+#"Set the current color using the current color map"
+#color(x::Real) = _backend.color(x,0)
+
 "Set the current color using the current color map"
 color(z::Number) = _backend.color(z)
 
