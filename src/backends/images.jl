@@ -4,30 +4,32 @@ module ImagesBE
 
 using Images
 
-import ..SDDGraphics: _ColorType, _width, _height, pointtopixel,
-    _axes, _coloringfunction
+import ..SDDGraphics: _ColorType, _bgcolor, _fgcolor, _coloringfunction,
+    _width, _height, pointtopixel, _axes
+
+
+function _init()
+end
 
 _color = _ColorType(0,0,0)
-_bgcolor = _ColorType(1,1,1)
-_fgcolor = _ColorType(0,0,0)
-
+#_bgcolor = _ColorType(1,1,1)
+#_fgcolor = _ColorType(0,0,0)
 
 color(c::_ColorType) = global _color = c
 color(x::Real, y::Real) = global _color = _coloringfunction(x,y)
 color(z::Number) = global _color = _coloringfunction(z)
 color() = _color
 
-bgcolor(c::_ColorType) = global _bgcolor = c
-bgcolor() = _bgcolor
+#bgcolor(c::_ColorType) = global _bgcolor = c
+#bgcolor() = _bgcolor
 
-fgcolor(c::_ColorType) = global _fgcolor = c
-fgcolor() = _fgcolor
+#fgcolor(c::_ColorType) = global _fgcolor = c
+#fgcolor() = _fgcolor
 
 
 _image = fill(_bgcolor, _height, _width)
 
-newdrawing() = global _image =
-    fill(_bgcolor, _height, _width)
+newdrawing() = global _image = fill(_bgcolor, _height, _width)
 
 
 drawpixel(i::Integer, j::Integer) = global _image[j,i] = _color

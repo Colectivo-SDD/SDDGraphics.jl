@@ -8,7 +8,7 @@ plane, complex plane, etc) to the color space.
 The colors used come from the current color map (really a color scheme of
 **ColorSchemes.jl**) defined in `colors.jl`.
 """
-abstract type AbstractColoringFunction end
+abstract type AbstractColoringFunction <: Function end
 
 
 """

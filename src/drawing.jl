@@ -7,7 +7,7 @@ _drawingkind = :png
 
 """
 Set the current kind of drawing
-- `:pixels` or `png`: Drawing pixels.
+- `:pixels` or `png`: Drawing pixels. Support depends on backend.
 - `:vectorial` or `svg`: Drawing using vectorial shapes. Support depends on backend.
 """
 function drawingkind(dk::Symbol)

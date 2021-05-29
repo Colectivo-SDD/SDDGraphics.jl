@@ -6,15 +6,22 @@ import Luxor
 import SDDGeometry: AbstractLine, AbstractRay, AbstractLineSegment,
     AbstractCircle, AbstractArc, basepointR2, initialpointR2, finalpointR2,
     angle, centerR2, radius
-import ..SDDGraphics: Colors, color, colortype, _ColorType, _coloringfunction,
-    _width, _height, _xmax, _xmin, _ymax, _ymin, pointtocanvas, _drawingkind, _axes
+import ..SDDGraphics: colortype, _ColorType, _bgcolor, _fgcolor, _coloringfunction,
+    _width, _height, _xmax, _xmin, _ymax, _ymin, pointtocanvas,
+    _drawingkind, _axes
+#_linewidth, _pointsize,
 
 using Colors
 
-colortype(Colors.RGBA{Float64}) # Luxor uses colors with alpha
-_bgcolor = _ColorType(1,1,1,0) # White completely transparent
-_fgcolor = _ColorType(0,0,0,1) # Black completely opaque
-_color = _ColorType(0,0,1,1)
+
+_color = RGBA{Float64}(0,0,1,1) # Blue
+
+function _init()
+    colortype(Colors.RGBA{Float64}) # Luxor uses colors with alpha
+    _bgcolor = _ColorType(1,1,1,0) # White completely transparent
+    _fgcolor = _ColorType(0,0,0,1) # Black completely opaque
+    _color = _ColorType(0,0,1,1)
+end
 
 
 function color(c::_ColorType)
@@ -23,23 +30,17 @@ function color(c::_ColorType)
 end
 
 function color(x::Real, y::Real)
-    global _color = c
-    Luxor.setcolor(_coloringfunction(x,y))
+    global _color = _coloringfunction(x,y)
+    Luxor.setcolor(_color)
 end
 
 function color(z::Number)
-    global _color = c
-    Luxor.setcolor(_coloringfunction(z))
+    global _color = _coloringfunction(z)
+    Luxor.setcolor(_color)
 end
 
 color() = _color
 
-
-bgcolor(c::_ColorType) = global _bgcolor = c
-bgcolor() = _bgcolor
-
-fgcolor(c::_ColorType) = global _fgcolor = c
-fgcolor() = _fgcolor
 
 _drawing = nothing
 _scalex = 1.0
@@ -49,17 +50,23 @@ _scaley = -1.0
 function newdrawing()
     global _drawing = Luxor.Drawing(_width, _height, _drawingkind)
     Luxor.background(_bgcolor)
-    Luxor.origin()
-    global _scalex = _width/(_xmax - _xmin)
-    global _scaley = -_height/(_ymax - _ymin)
-    Luxor.scale(_scalex, _scaley)
-    Luxor.translate(-(_xmin + _xmax)/2, -(_ymin + _ymax)/2)
+    
     if _axes
         Luxor.setcolor(_fgcolor)
-        Luxor.rule(Luxor.O)
-        Luxor.rule(Luxor.O, π/2)
-        Luxor.setcolor(_color)
+        #Luxor.rule(Luxor.O)
+        #Luxor.rule(Luxor.O, π/2)
+        w0, h0 = pointtocanvas(0,0)
+        Luxor.arrow(Luxor.Point(0,h0), Luxor.Point(_width,h0), linewidth=2, arrowheadlength=8)
+        Luxor.arrow(Luxor.Point(w0,_height), Luxor.Point(w0,0), linewidth=2, arrowheadlength=8)
     end
+
+    global _scalex = _width/(_xmax - _xmin)
+    global _scaley = -_height/(_ymax - _ymin)
+    Luxor.origin()
+    Luxor.scale(_scalex, _scaley)
+    Luxor.translate(-(_xmin + _xmax)/2, -(_ymin + _ymax)/2)
+    Luxor.setcolor(_color)
+    Luxor.setline(_linewidth)
 end # function
 
 
@@ -146,9 +153,9 @@ drawarc(a::AbstractArc) =
 Luxor.arc2r(Luxor.Point(centerR2(a)...),Luxor.Point(initialpointR2(a)...),Luxor.Point(finalpointR2(a)...),:stroke)
 
 drawarc(x1::Real, y1::Real, x2::Real, y2::Real) =
-Luxor.arc2sagitta(Luxor.Point(x1,y1),Luxor.Point(x2,y2),sqrt((x1-x2)^2+(y1-y2)^2)/2,:stroke)
+Luxor.arc2sagitta(Luxor.Point(x1,y1),Luxor.Point(x2,y2),sqrt((x1-x2)^2+(y1-y2)^2)/2+0.001,:stroke)
 drawarc(z1::Number, z2::Number) =
-Luxor.arc2sagitta(Luxor.Point(real(z1),imag(z1)),Luxor.Point(real(z2),imag(z2)),abs(z1-z2)/2,:stroke)
+Luxor.arc2sagitta(Luxor.Point(real(z1),imag(z1)),Luxor.Point(real(z2),imag(z2)),abs(z1-z2)/2+0.001,:stroke)
 
 
 function drawing()

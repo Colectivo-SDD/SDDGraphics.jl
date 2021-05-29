@@ -43,7 +43,10 @@ ylims(a::Real, b::Real) = global _ymin, _ymax = a, b
 
 "Set the rectangular region limits."
 rectregion(x0::Real, x1::Real, y0::Real,y1 ::Real) =
-    global _xmin, _xmax, _ymin, _ymax = x0, x1, y0, y1
+global _xmin, _xmax, _ymin, _ymax = x0, x1, y0, y1
+
+"Create a square (**Tuple** of four real numbers) to set the rectangular region."
+square(l::Real, x0::Real=0, y0::Real=0) = x0-l, x0+l, y0-l, y0+l
 
 
 "Check if (x,y) is inside of the rectangular region."

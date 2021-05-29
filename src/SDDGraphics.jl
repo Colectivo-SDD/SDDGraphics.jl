@@ -20,6 +20,7 @@ export
   ymin,
   xmax,
   ymax,
+  square,
   insiderectregion,
   pointtopixel,
   pixeltopoint,
@@ -39,6 +40,9 @@ export
   colormap,
   colorarray,
   updatecolorarray,
+  colorinterpolation,
+  colorinterpolationbg,
+  colorinterpolationfg,
   coloringfunction,
   RadialColoringFunction, RadialCF,
   AngleColoringFunction, AngleCF

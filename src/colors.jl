@@ -1,11 +1,19 @@
 
-@reexport using Colors, ColorSchemes
+@reexport using Colors, ColorVectorSpace, ColorSchemes
 
 
 _ColorType = RGB{Float64}
-_colorscheme = colorschemes[:jet1]
+_bgcolor = _ColorType(1,1,1) # White
+_fgcolor = _ColorType(0,0,0) # Black
+#_color = _ColorType(0,0,1) # Blue
+#_gridcolor = _ColorType(0.5,0.5,0.5) # Gray
+#_featurecolor = _ColorType(0.5,0.5,0.5) # Gray
+_colorscheme = colorschemes[:jet]
 _colorarray = Colorant[]
 
+mutable struct _ColorConfig
+
+end
 
 "Set the color type for pixel images."
 function colortype(T::DataType)
@@ -17,7 +25,14 @@ end # function
 colortype() = _ColorType
 
 
-_calculatecolorarray(ncolors::Integer) = global _colorarray = [ _colorscheme[n/ncolors] for n in 0:ncolors ]
+function _calculatecolorarray(ncolors::Integer)
+    if ncolors <= 1
+        global _colorarray = [ _colorscheme[1] ]
+        return _colorarray
+    end
+    N = ncolors-1
+    global _colorarray = [ _colorscheme[n/N] for n in 0:N ]
+end
 
 _calculatecolorarray(100)
 
@@ -72,30 +87,67 @@ color(n::Integer) = _backend.color(convert(_ColorType, _colorarray[n]))
 "Set the current color from t-interpolated color in the color scheme."
 colorinterpolation(t::Real) = _backend.color(convert(_ColorType, _colorscheme[t]))
 
-"Set the current color using the current color map"
-color(x::Real, y::Real) = _backend.color(x,y)
+"Set the current color using the current coloring function."
+color(x::Real, y::Real) = _backend.color(convert(_ColorType, _coloringfunction(x,y)))
 
-#"Set the current color using the current color map"
-#color(x::Real) = _backend.color(x,0)
-
-"Set the current color using the current color map"
-color(z::Number) = _backend.color(z)
+"Set the current color using the current coloring function."
+color(z::Number) = _backend.color(convert(_ColorType, _coloringfunction(z)))
 
 "Set the current color."
 color(c::Colorant) = _backend.color(convert(_ColorType, c))
+
+"Set the current color using RGBA."
+color(r::Real,g::Real,b::Real,a::Real=1) =
+_backend.color(convert(_ColorType, RGBA{Float64}(r,g,b,a)))
+
 
 "Get the current color"
 color() = _backend.color()
 
 
 "Set the current background color."
-bgcolor(c::Colorant) = _backend.bgcolor(convert(_ColorType, c))
+bgcolor(c::Colorant) = global _bgcolor = convert(_ColorType, c)
+
+"Set the current background color using RGBA."
+bgcolor(r::Real,g::Real,b::Real,a::Real=1) =
+global _bgcolor = convert(_ColorType, RGBA{Float64}(r,g,b,a))
 
 "Get the current background color"
-bgcolor() = _backend.bgcolor()
+bgcolor() = _bgcolor
 
 "Set the current foreground color."
-fgcolor(c::Colorant) = _backend.fgcolor(convert(_ColorType, c))
+fgcolor(c::Colorant) = global _fgcolor = convert(_ColorType, c)
+
+"Set the current foreground color using RGBA."
+fgcolor(r::Real,g::Real,b::Real,a::Real=1) =
+global _fgcolor = convert(_ColorType, RGBA{Float64}(r,g,b,a))
 
 "Get the current foreground color"
-fgcolor() = _backend.fgcolor()
+fgcolor() = _fgcolor
+
+
+"""
+    colorinterpolationbg(t, n)
+
+Set the current color as the  linear color interpolation using the n-th color
+in the current colormap to the backgrund color.
+
+#### Arguments
+- `t::Real`: Number between \$0\$ and \$1\$.
+- `n::Int`: Color index in the color array from colormap.
+"""
+colorinterpolationbg(t::Real, n::Int) =
+_backend.color(convert(_ColorType, (1-t)*_colorarray[n]+t*_bgcolor))
+
+"""
+    colorinterpolationfg(t, n)
+
+Set the current color as the  linear color interpolation using the n-th color
+in the current colormap to the foreground color.
+
+#### Arguments
+- `t::Real`: Number between \$0\$ and \$1\$.
+- `n::Int`: Color index in the color array from colormap.
+"""
+colorinterpolationfg(t::Real, n::Int) =
+_backend.color(convert(_ColorType, (1-t)*_colorarray[n]+t*_fgcolor))

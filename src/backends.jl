@@ -27,12 +27,14 @@ function backend(sym::Symbol)
         if sym in keys(_backends) # if initialized
             global _backend_symbol = sym
             global _backend = _backends[sym]
+            #_backend._init()
         else
             include(string(@__DIR__,"/backends/", sym, ".jl"))
             global _backend_symbol = sym
             namebe = Symbol(_supportedbackends[sym]*"BE")
             global _backend = @eval $namebe
             global _backends[sym] = _backend
+            #_backend._init()
         end # if initialized
         #@info "Using backend :$_backend_symbol."
     else
