@@ -40,7 +40,7 @@ end
 RadialColoringFunction(z::Complex; innerradius::Real=0, outerradius::Real=1) =
 RadialColoringFunction(real(z),imag(z),inneradius,outeradius)
 
-RadialCF = RadialColoringFunction
+const RadialCF = RadialColoringFunction
 
 center(cf::RadialColoringFunction) = cf.centerx, cf.centery
 innerradius(cf::RadialColoringFunction) = cf.inrad
@@ -80,7 +80,7 @@ end
 
 AngleColoringFunction(x::Real, y::Real) = AngleColoringFunction(complex(x,y))
 
-AngleCF = AngleColoringFunction
+const AngleCF = AngleColoringFunction
 
 center(cf::AngleColoringFunction) = cf.center
 
@@ -97,18 +97,102 @@ function (cf::AngleColoringFunction)(x::Real, y::Real)
 end
 
 
+"""
+    AngleBumpColoringFunction(center=0,beta=1)
+    AngleBumpColoringFunction(centerx,centery,beta=1)
+
+The angle with bump coloring function is given by the function
+
+\$z \\mapsto colorscheme[\\frac{angle(z-center)+\\pi}{2\\pi}]/(1+\\beta|z-center|^2))\$
+"""
+struct AngleBumpColoringFunction <: AbstractColoringFunction
+    center::Complex{Float64}
+    β::Float64
+
+    function AngleColoringFunction(z::Number=0,β::Real=1)
+        new(z)
+    end
+end
+
+AngleBumpColoringFunction(x::Real, y::Real, β::Real=1) =
+AngleBumpColoringFunction(complex(x,y),β)
+
+const AngleBumpCF = AngleBumpColoringFunction
+
+center(cf::AngleBumpColoringFunction) = cf.center
+bumpfactor(cf::AngleBumpColoringFunction) = cf.β
+
+
+function (cf::AngleBumpColoringFunction)(z::Number)
+    if isnan(z)
+        return last(_colorarray)
+    end
+    w = z - cf.center
+    _colorscheme[(angle(w) + π)/(2π)]/(1+β*abs2(w))
+end
+
+function (cf::AngleBumpColoringFunction)(x::Real, y::Real)
+    cf(complex(x,y))
+end
+
+
+
+"""
+    ChessColoringFunction(centerx=0,centery=0,width=1,height=1)
+    ChessColoringFunction(center,width=1,height=1)
+
+The chess coloring function.
+"""
+struct ChessColoringFunction <: AbstractColoringFunction
+    centerx::Float64
+    centery::Float64
+    width::Float64
+    height::Float64
+
+    function ChessColoringFunction(x::Real=0,y::Real=0,w::Real=1,h::Real=1)
+        new(x,y,w,h)
+    end
+end
+
+ChessColoringFunction(z::Number,w::Real=1,h::Real=1) =
+ChessColoringFunction(real(x),imag(y),w,h)
+
+const ChessCF = ChessColoringFunction
+
+center(cf::ChessColoringFunction) = complex(cf.centerx, cf.centery)
+centerx(cf::ChessColoringFunction) = cf.centerx
+centery(cf::ChessColoringFunction) = cf.centery
+width(cf::ChessColoringFunction) = cf.width
+height(cf::ChessColoringFunction) = cf.height
+
+
+function (cf::ChessColoringFunction)(x::Real, y::Real)
+    if abs(x) >= typemax(Int64) || abs(y) >= typemax(Int64) || isnan(x) || isnan(y)
+        return _colorscheme[0.5]
+    end
+    if floor(Int64, mod1(cf.centerx + x/cf.width, 2)) == floor(Int64, mod1(cf.centery + y/cf.height, 2))
+        return first(_colorarray)
+    end
+    last(_colorarray)
+end
+
+function (cf::ChessColoringFunction)(z::Number)
+    cf(real(z), imag(z))
+end
+
+
+
 #=
 ToDo!
 LinearColoringFunction (linear gradient, any direction)
-RadialAngleColoringFunction (combination)
-MultiRadialColoringFunction (Multi-center)
-LineRadialColoringFunction
-CircleRadialColoringFunction
+RadialAngleColoringFunction (combination) ???
+MultiRadialColoringFunction (Multi-center) ???
+LineBumpColoringFunction
+CircleBumpColoringFunction
 RectangleColoringFunction (Inside rectangle one color, outside other color)
 DiscColoringFunction (Inside disc one color, outside other color)
 ImageColoringFunction (Colors from image's pixels)
-BandColoringFunction (regular bands plane tesselation)
-ChessColoringFunction (regular rectangles plane tesselation)
+BandColoringFunction (regular bands plane tesselation, check chess)
 RadialChessColoringFunction ("regular radial rectangles" plane tesselation)
 =#
 
