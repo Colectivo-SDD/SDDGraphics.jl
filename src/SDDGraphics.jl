@@ -1,12 +1,48 @@
 
 """
-A simple common interface to diverse graphics packages backends useful for
-drawings in SDD algorithms.
+Set of useful functions for graphics, vislualization, images and colors.
 """
 module SDDGraphics
 
+
 using Reexport
 
+
+include("colorsutils.jl")
+
+export
+  #reverse,
+  withalpha
+
+
+include("coloringfunctions.jl")
+
+export
+  coloringfunction,
+  RadialColoringFunction, RadialCF,
+  AngleColoringFunction, AngleCF
+  #ChessColoringFunction, ChessCF
+
+
+#include("imagesutils.jl")
+
+#export
+
+
+include("makieutils.jl")
+
+export
+  topoint2,
+  topoint2f,
+  topoint3,
+  topoint3f,
+  tocomplex,
+  basicfigureaxis
+  #pearl
+  #pearlcolors
+
+
+#=
 include("canvas.jl")
 
 export
@@ -136,5 +172,7 @@ export
   backend,
   backends,
   supported
+
+=#
 
 end
