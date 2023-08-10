@@ -9,12 +9,12 @@
 """
 Convert an `Array{<:Real}` to `Point2f`.
 """
-topoint2f(a::Array{<:Real}) = Point2f(a[1], a[2])
+topoint2f(a::AbstractArray{<:Real}) = Point2f(a[1], a[2])
 
 """
 Convert an `Array{<:Real}` to `Point3f`.
 """
-topoint3f(a::Array{<:Real}) = Point3f(a[1], a[2], a[3])
+topoint3f(a::AbstractArray{<:Real}) = Point3f(a[1], a[2], a[3])
 
 """
 Convert a `Number` to `Point2f`.
@@ -24,12 +24,12 @@ topoint2f(c::Number) = Point2f(real(c), imag(c))
 """
 Convert an `Array{<:Real}` to `Point2`.
 """
-topoint2(a::Array{<:Real}) = Point2(a[1], a[2])
+topoint2(a::AbstractArray{<:Real}) = Point2(a[1], a[2])
 
 """
 Convert an `Array{<:Real}` to `Point3`.
 """
-topoint3(a::Array{<:Real}) = Point3(a[1], a[2], a[3])
+topoint3(a::AbstractArray{<:Real}) = Point3(a[1], a[2], a[3])
 
 """
 Convert a `Number` to `Point2`.

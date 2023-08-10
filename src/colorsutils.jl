@@ -13,7 +13,7 @@
 Return the reversed color array in a `ColorScheme` colormap.
 """
 #reverse(cs::ColorScheme) = Base.reverse(cs.colors)
-#reverse(s::Symbol) = Base.reverse(colorschemes[s].colors)
+reverse(s::Symbol) = Base.reverse(colorschemes[s].colors)
 
 
 """

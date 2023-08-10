@@ -11,7 +11,7 @@ using Reexport
 include("colorsutils.jl")
 
 export
-  #reverse,
+  reverse,
   withalpha
 
 
