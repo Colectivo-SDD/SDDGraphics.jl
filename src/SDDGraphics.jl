@@ -18,10 +18,20 @@ export
 include("coloringfunctions.jl")
 
 export
-  coloringfunction,
+  #coloringfunction,
+  AbstractColoringFunction,
+  #AbstractSimpleColoringFunction,?
+  #AbstractXColoringFunction,?
+  DiscColoringFunction, DiscCF,
   RadialColoringFunction, RadialCF,
-  AngleColoringFunction, AngleCF
-  #ChessColoringFunction, ChessCF
+  AngleColoringFunction, AngleCF,
+  AngleBumpColoringFunction, AngleBumpCF,
+  ChessColoringFunction, ChessCF,
+  ClassicDomainColoringFunction, ClassicDomainCF,
+  CartesianGridColoringFunction, CartesianGridCF,
+  PolarGridColoringFunction, PolarGridCF,
+  PictureColoringFunction, PictureCF,
+  RepeatPictureColoringFunction, RepeatPictureCF
 
 
 #include("imagesutils.jl")
