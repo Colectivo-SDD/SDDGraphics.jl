@@ -12,7 +12,8 @@ include("colorsutils.jl")
 
 export
   reverse,
-  withalpha
+  withalpha,
+  getcolorscheme
 
 
 include("coloringfunctions.jl")
@@ -75,7 +76,6 @@ export
 
 
 include("colors.jl")
-include("coloringfunctions.jl")
 
 export
   colortype,
@@ -88,10 +88,17 @@ export
   updatecolorarray,
   colorinterpolation,
   colorinterpolationbg,
-  colorinterpolationfg,
+  colorinterpolationfg
+
+
+include("coloringfunctions.jl")
+
+export
   coloringfunction,
   RadialColoringFunction, RadialCF,
-  AngleColoringFunction, AngleCF
+  AngleColoringFunction, AngleCF,
+  AngleBumpColoringFunction, AngleBumpCF,
+  ChessColoringFunction, ChessCF
 
 
 include("drawing.jl")
@@ -105,7 +112,7 @@ Shortcut function to configure graphics.
 #### Arguments
 - `canvassize=(w,h)` or `canvas=(w,h)`: Set the canvas size.
 """
-  function configure(; kwargs...)
+function configure(; kwargs...)
     for (k,v) in kwargs
       if k == :canvassize || k == :canvas
         canvassize(v...)
@@ -141,6 +148,8 @@ Shortcut function to configure graphics.
         coloringfunction(v)
       elseif k == :axes
         axes(v)
+      #elseif k == :ticks
+      #  ticks(v)
       elseif k == :pointsize || k == :ps
         pointsize(v)
       elseif k == :linewidth || k == :lw
@@ -151,12 +160,12 @@ Shortcut function to configure graphics.
       #  dash(v)
       end
     end
-  end
+end
 
 export
   pointsize,
   linewidth,
-  style, # :stroke, :fill, :fillstroke, :fillgrad
+  style, # :stroke, :fill, :fillstroke, :fillborder, :pearl
   #dash
   configure,
   drawingkind,
@@ -173,6 +182,8 @@ export
   #drawrect, #?
   axes,
   drawing
+  # begincompose
+  # endcompose
 
 
 include("backends/images.jl") # Default backend

@@ -33,3 +33,15 @@ withalpha(ca::Vector{<:Colorant}, a::Function) = [ RGBA(c[n],a[(n-1)/(length(ca)
 withalpha(cs::ColorScheme, a::Function) = [ RGBA(cs.colors[n], a((n-1)/length(cs.colors))) for n in 1:length(cs.colors) ] 
 withalpha(s::Symbol, a::Function) = withalpha(colorschemes[s], a)
 
+
+"""
+"""
+function getcolorscheme(cm)
+  if cm isa String
+    return colorschemes[eval(Meta.parse(":"*cm))]
+  elseif cm isa Vector
+    return ColorScheme(cm)
+  end
+    
+  colorschemes[cm] # Symbol
+end
