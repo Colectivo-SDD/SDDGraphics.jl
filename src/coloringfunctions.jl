@@ -250,7 +250,7 @@ RadialChessColoringFunction ("regular radial rectangles" plane tesselation)
 using Colors, ColorSchemes
 
 """
-    ClassicDomainColoringFunction([colormap; radius, radialcolor, width, height, cartesiancolor])
+    ClassicDomainColoringFunction([colormap; radius, radialcolor, radialexp, width, height, cartesiancolor, cartesianexp, radialgrid, cartesiangrid])
 """
 struct ClassicDomainColoringFunction <: AbstractColoringFunction
     cm::ColorScheme
@@ -261,12 +261,15 @@ struct ClassicDomainColoringFunction <: AbstractColoringFunction
     cexp::Float64
     rshade::RGB{Float64}
     cshade::RGB{Float64}
+    radgrid::Bool
+    cartgrid::Bool
 
     function ClassicDomainColoringFunction(clrmap::Union{Symbol,Vector{<:Colorant}}=:hsv;
-        radialshade::Colorant=RGBf(0.8,0.8,0.8), radius::Real=1, radialexp::Real=4,
-        cartesianshade::Colorant=RGBf(0.2,0.2,0.2), width::Real=2, height::Real=2, cartesianexp::Real=4)
-        new(clrmap isa Symbol ? colorschemes[clrmap] : ColorSchemes(clrmap),
-          radius,width,height,radialexp,cartesianexp,RGBf(radialshade),RGBf(cartesianshade))
+        radialshade::Colorant=RGBf(0.9,0.9,0.9), radius::Real=1, radialexp::Real=8,
+        cartesianshade::Colorant=RGBf(0.1,0.1,0.1), width::Real=2, height::Real=2, cartesianexp::Real=4,
+        radialgrid::Bool=true, cartesiangrid::Bool=true)
+        new(clrmap isa Symbol ? colorschemes[clrmap] : ColorScheme(clrmap),
+          radius,width,height,radialexp,cartesianexp,RGBf(radialshade),RGBf(cartesianshade),radialgrid,cartesiangrid)
     end
 end
 
@@ -275,21 +278,29 @@ const ClassicDomainCF = ClassicDomainColoringFunction
 
 function (cf::ClassicDomainCF)(z::Number)
     r = abs(z)
-    if isnan(r)
+
+    if isnan(r) || isinf(r)
         return cf.cshade
     end
-    r = (r%cf.deltar)/cf.deltar
-    r ^= cf.rexp
 
     c = RGBf(cf.cm[(angle(-z)+pi)/(2pi)])
-    c = (1.0-r)*c + r*cf.rshade
 
-    x = (abs(real(z))%cf.deltax)/cf.deltax
-    y = (abs(imag(z))%cf.deltay)/cf.deltay
-    v = abs(cos(pi*x)*cos(pi*y))
-    v ^= (1/cf.cexp)
+    if cf.radgrid
+        r = (r%cf.deltar)/cf.deltar
+        r = sin(pi*r)^2
+        r ^= 1/cf.rexp
+        c = r*c + (1.0-r)*cf.rshade
+    end
 
-    v*c + (1.0-v)*cf.cshade # return color
+    if cf.cartgrid
+        x = (abs(real(z))%cf.deltax)/cf.deltax
+        y = (abs(imag(z))%cf.deltay)/cf.deltay
+        v = abs(cos(pi*x)*cos(pi*y))
+        v ^= 1/cf.cexp
+        c = v*c + (1.0-v)*cf.cshade
+    end
+
+    c # return color
 end
 
 function (cf::ClassicDomainCF)(x::Real, y::Real)
